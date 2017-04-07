@@ -1,3 +1,5 @@
+import time
+
 # This is the set-up of the data structures to be used to collect and organize the studentInfo
 sLast = []
 sFirst = []
@@ -11,12 +13,12 @@ tFirst = []
 # Now we read the file
 try:
     f = open('students.txt', 'r')
-except:
-    print("Unable to open fille\n")
+except Exception:
+    print("Unable to open file\n")
     exit()
 # This loop extracts the lines from the file and distributes each bit of info to the correct array
 for line in f.readlines():
-    student = line.split(',')
+    student = line.upper().split(',')
     sLast.append(student[0])
     sFirst.append(student[1])
     grade.append(student[2])
@@ -26,128 +28,7 @@ for line in f.readlines():
     tLast.append(student[6])
     tFirst.append(student[7].rstrip())
 
-inp = input('Enter a search Instruction or \'Q\' to quit: ')
-while inp != 'Q' or input != 'Quit':
-    if inp[0:2] == 'S:' or inp[0:8] == 'Student:':
-        split = inp.strip().split(' ')
-
-        # This implements R5
-        if len(split) == 3 and (split[2] == 'Bus' or split[2] == 'B'):
-            inds = search(sLast, split[1])
-            if len(inds) == 0:
-                print("Last name not found")
-                inp = input('Enter a search Instruction or \'Q\' to quit: ')
-                continue
-            for i in inds:
-                print(sLast[i], sFirst[i], bus[i])
-        # This implements R4
-        if len(split) == 2:
-            inds = search(sLast, split[1])
-            if len(inds) == 0:
-                print("Last name not found")
-                inp = input('Enter a search Instruction or \'Q\' to quit: ')
-                continue
-            for i in inds:
-                print(sLast[i], sFirst[i], ', Grade: ' + grade[i], ', Classroom: ' + classroom[i], ', Teacher:',
-                      tLast[i] + ',', tFirst[i])
-
-    elif inp[0:2] == 'T:' or inp[0:8] == 'Teacher:':
-        # implement R6
-        split = inp.strip().split()
-        inds = search(tLast, split[1])
-        if len(inds) == 0:
-            print("Last name not found")
-            inp = input('Enter a search Instruction or \'Q\' to quit: ')
-            continue
-        for i in inds:
-            print(sLast[i], ',', sFirst[i])
-
-    elif inp[0:2] == 'G:' or inp[0:6] == 'Grade:':
-        # implement R7 and R9
-        split = inp.strip().split()
-        number = split[1]
-
-        if len(split) == 2:
-            inds = search(grade, number)
-            if len(inds) == 0:
-                print("Grade entered yielded no results")
-                inp = input('Enter a search Instruction or \'Q\' to quit: ')
-                continue
-            for i in inds:
-                print(sLast[i], ',', sFirst[i])
-
-        if len(split) == 3:
-            if split[2] == 'High' or split[2] == 'H':
-                inds = []
-                for j in range(len(grade)):
-                    if grade[j] == number:
-                        inds.append(j)
-                maxGPA = 0
-                maxInd = -1
-                for i in inds:
-                    if float(gpa[i]) > maxGPA:
-                        maxGPA = float(gpa[i])
-                        maxInd = i
-                print('Student:', sLast[maxInd] + ',', sFirst[maxInd], 'GPA:', gpa[maxInd], 'Teacher:',
-                      tLast[maxInd], tFirst[maxInd], 'Bus:', bus[maxInd])
-
-            elif split[2] == 'Low' or split[2] == 'L':
-                inds = []
-                for j in range(len(grade)):
-                    if grade[j] == number:
-                        inds.append(j)
-                minGPA = 4.0
-                minInd = -1
-                for i in inds:
-                    if float(gpa[i]) < minGPA:
-                        minGPA = float(gpa[i])
-                        minInd = i
-                print('Student:', sLast[minInd] + ',', sFirst[minInd], 'GPA:', gpa[minInd], 'Teacher:',
-                      tLast[minInd], tFirst[minInd], 'Bus:', bus[minInd])
-
-    elif inp[0:2] == 'B:' or inp[0:4] == 'Bus:':
-        # implement R8
-        split = inp.strip().split(' ')
-        if len(split) != 2:
-            print("Invalid input")
-            inp = input('Enter a search Instruction or \'Q\' to quit: ')
-            continue
-        inds = search(bus, split[1])
-        if len(inds) == 0:
-            print("Bus entered yielded no results")
-            inp = input('Enter a search Instruction or \'Q\' to quit: ')
-            continue
-        for i in inds:
-            print('Student:', sLast[i], sFirst[i], ', Grade:', grade[i], ', Classroom:', classroom[i])
-
-
-
-    elif inp[0:2] == 'A:' or inp == 'Average:':
-        # implement R10
-        split = inp.strip().split(' ')
-        inds = search(grade, split[1])
-        sum = 0
-        for i in inds:
-            sum += float(gpa[i])
-        if len(inds) == 0:
-            print('No students in this grade')
-            inp = input('Enter a search Instruction or \'Q\' to quit: ')
-            continue
-        avg = sum / len(inds)
-        print('Grade:', split[1], 'Average GPA:', avg)
-
-
-    elif inp == 'I' or inp == 'Info':
-        # implement R11
-        print("I")
-    else:
-        if inp == 'Q' or inp == 'Quit':
-            break
-        else:
-            print('Enter a valid instruction')
-
-    inp = input('Enter a search Instruction or \'Q\' to quit: ')
-exit()
+f.close()
 
 
 def search(arr, str1):
@@ -158,26 +39,145 @@ def search(arr, str1):
     return inds
 
 
+def getavg(gradenum):
+    start = time.time()
+    gpas = search(grade, gradenum)
+    elapsed = time.time() - start
+    sum = 0
+    for i in gpas:
+        sum += float(gpa[i])
+    if len(gpas) == 0:
+        print('No students in this grade')
+        return
+    avg = sum / len(gpas)
+    print 'Grade: ' + gradenum + ' Average GPA: ' + str(avg)
+    print str(elapsed) + "\n"
+    return
+
+
+def bussearch(busnum):
+    start = time.time()
+    buses = search(bus, busnum)
+    elapsed = time.time() - start
+    if len(buses) == 0:
+        print"Bus entered yielded no results"
+    else:
+        for i in buses:
+            print'Student:' + sLast[i] + ", " + sFirst[i] + ' Grade: ' + grade[i] +  ' Classroom: ' + classroom[i]
+    print str(elapsed) + "\n"
+    return
+
+
+def gradesearch(number, optarg=""):
+    start = time.time()
+    grades = search(grade, number)
+    elapsed = time.time() - start
+    if len(grades) == 0:
+        print("Grade entered yielded no results")
+    elif optarg == "":
+        for i in grades:
+            print sLast[i] + ', ' + sFirst[i]
+    else:
+            if optarg == 'HIGH' or optarg == 'H':
+                maxGPA = 0
+                maxInd = -1
+                for j in range(len(grades)):
+                    if float(gpa[j]) > maxGPA:
+                        maxGPA = float(gpa[j])
+                        maxInd = j
+                print 'Student:' + sLast[maxInd] + ', ' + sFirst[maxInd] + ' GPA: ' + gpa[maxInd] + ' Teacher: ' + tLast[maxInd] + ", " + tFirst[maxInd] + ' Bus: ' + bus[maxInd]
+            elif optarg == 'LOW' or optarg == 'L':
+                minGPA = 4.0
+                minInd = -1
+                for i in range(len(grades)):
+                    if float(gpa[i]) < minGPA:
+                        minGPA = float(gpa[i])
+                        minInd = i
+                print 'Student:' + sLast[minInd] + ', ' + sFirst[minInd] + ' GPA: ' + gpa[minInd] + ' Teacher: ' + tLast[minInd] + ", " + tFirst[minInd] + ' Bus: ' + bus[minInd]
+    print str(elapsed) + "\n"
+    return
+
+
 def teachersearch(t_lname):
+    start = time.time()
     teach = search(tLast, t_lname)
+    elapsed = time.time() - start
     if len(teach) == 0:
         print("Last name not found")
     else:
         for i in teach:
-            print(sLast[i], ',', sFirst[i])
+            print sLast[i], ', ', sFirst[i]
+    print str(elapsed) + "\n"
     return
 
 
 def studentsearch(stu_lname, optarg = ""):
+    start = time.time()
     stu = search(sLast, stu_lname)
+    elapsed = time.time() - start
     if len(stu) == 0:
         print("Last name not found")
         return
-    if optarg == "Bus:" or optarg == "B:":
+    if optarg == "BUS" or optarg == "B":
         for i in stu:
-            print(sLast[i], sFirst[i], bus[i])
-    else:
-        for i in inds:
-            print(sLast[i], sFirst[i], ', Grade: ' + grade[i], ', Classroom: ' + classroom[i], ', Teacher:',
-                  tLast[i] + ',', tFirst[i])
+            print sLast[i] + ", " + sFirst[i] + " " + bus[i]
+    elif optarg == "":
+        for i in stu:
+            print sLast[i], sFirst[i], ', Grade: ' + grade[i], ', Classroom: ' + classroom[i], ', Teacher:', tLast[i] + ',', tFirst[i]
+    print str(elapsed) + "\n"
     return
+
+running = True
+
+while running:
+    inp = raw_input('Enter a search Instruction or \'Q\' to quit: ')
+    args = inp.strip().upper().split(' ')
+    print
+
+    if args[0] == 'S:' or args[0] == 'STUDENT:':
+        option = ""
+        # This implements R5
+        if len(args) == 3:
+            option = args[2]
+        if len(args) > 3:
+            continue
+        # This implements R4
+        studentsearch(args[1], option)
+
+    elif args[0] == 'T:' or args[0] == 'TEACHER:':
+        # implement R6
+        if len(args) > 2:
+            continue
+        teachersearch(args[1])
+
+    elif args[0] == 'G:' or args[0] == 'GRADE:':
+        # implement R7 and R9
+        number = args[1]
+        option = ""
+        if len(args) == 3:
+            option = args[2]
+        if len(args) > 3:
+            continue
+        gradesearch(number, option)
+
+    elif args[0] == 'B:' or args[0] == 'BUS:':
+        # implement R8
+        if len(split) > 2:
+            continue
+        else:
+            bussearch(args[1])
+
+    elif args[0] == 'A:' or args[0] == 'AVERAGE:':
+        # implement R10
+        if len(args) > 2:
+            continue
+        getavg(args[1])
+
+    elif args[0] == 'Q' or args[0] == 'QUIT':
+        running = False
+        break
+
+    else:
+        print('Enter a valid instruction')
+
+exit()
