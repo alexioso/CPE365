@@ -1,6 +1,17 @@
+# Mitchel Davis
+# Alex Braksator
+
+# April 7 2017
+# Lab01 CPE 365
+
+# Trivial Requirements Satisfied
+# R1 - Python runs on lab machines
+# R2 - No command line parameters are needed
+# R3 - Language for Search instructions is implemented  See main loop and functions
+
 import time
 
-# This is the set-up of the data structures to be used to collect and organize the studentInfo
+# Initializing arrays to store attributes of students
 sLast = []
 sFirst = []
 grade = []
@@ -10,13 +21,14 @@ gpa = []
 tLast = []
 tFirst = []
 
-# Now we read the file
+# Read the students.txt file and catch any exceptions
+# Satisfies requirement R12
 try:
     f = open('students.txt', 'r')
 except Exception:
     print("Unable to open file\n")
     exit()
-# This loop extracts the lines from the file and distributes each bit of info to the correct array
+# Reads through the file and fills arrays with student info
 for line in f.readlines():
     student = line.upper().split(',')
     sLast.append(student[0])
@@ -31,6 +43,10 @@ for line in f.readlines():
 f.close()
 
 
+# Helper function to search an array with a given input string
+# @param arr: the array to search through
+# @param str1: the search string
+# @return a subset of objects from arr that match str1
 def search(arr, str1):
     inds = []
     for i in range(len(arr)):
@@ -39,6 +55,13 @@ def search(arr, str1):
     return inds
 
 
+# Prints the average GPA for the specified grade or gives
+# error message if there are no students in that grade
+
+# Satisfies requirement R10 and R11
+
+# Also prints the time it took to complete the search
+# @param gradenum: the grade to look for
 def getavg(gradenum):
     start = time.time()
     gpas = search(grade, gradenum)
@@ -55,6 +78,13 @@ def getavg(gradenum):
     return
 
 
+# Prints the information outlined in R8 or gives
+# error message if there are no results to show
+
+# Satisfies requirements R8 and R11
+
+# Also prints the time it took to complete the search
+# @param busnum: the number of the bus route to search for
 def bussearch(busnum):
     start = time.time()
     buses = search(bus, busnum)
@@ -68,6 +98,15 @@ def bussearch(busnum):
     return
 
 
+# Prints the student info outlined in R7 and R9 of students in the specified grade
+# or an error message showing that no students are in that grade
+
+# Satisfies requirements R7 R9 and R11
+
+# Also prints the time it took to complete the search
+# @param number: the grade number to search for
+# @parm optarg: an optional argument.  Represents either "H[igh]" or "L[ow]"
+#   default parameter value is ""
 def gradesearch(number, optarg=""):
     start = time.time()
     grades = search(grade, number)
@@ -98,6 +137,13 @@ def gradesearch(number, optarg=""):
     return
 
 
+# Prints out the students with the specified teacher
+# or an error message stating no teacher with that name was found
+
+# Satisfies requirements R6 and R11
+
+# Also prints the time it took to complete the search
+# @param t_lname: the last name of the teacher to search for
 def teachersearch(t_lname):
     start = time.time()
     teach = search(tLast, t_lname)
@@ -111,6 +157,15 @@ def teachersearch(t_lname):
     return
 
 
+# Prints the student info outlined in R4 and R5 of students with specified last name
+# or an error message stating no student with that name was found
+
+# Satisfies requirements R4 R5 and R11
+
+# Also prints the time it took to complete the search
+# @param stu_lname: the last name of the student to search for
+# @parm optarg: an optional argument.  Represents either "B[us]"
+#   default parameter value is ""
 def studentsearch(stu_lname, optarg = ""):
     start = time.time()
     stu = search(sLast, stu_lname)
@@ -127,31 +182,26 @@ def studentsearch(stu_lname, optarg = ""):
     print str(elapsed) + "\n"
     return
 
-running = True
-
-while running:
+# main loop of program
+while True:
     inp = raw_input('Enter a search Instruction or \'Q\' to quit: ')
     args = inp.strip().upper().split(' ')
     print
 
     if args[0] == 'S:' or args[0] == 'STUDENT:':
         option = ""
-        # This implements R5
         if len(args) == 3:
             option = args[2]
         if len(args) > 3:
             continue
-        # This implements R4
         studentsearch(args[1], option)
 
     elif args[0] == 'T:' or args[0] == 'TEACHER:':
-        # implement R6
         if len(args) > 2:
             continue
         teachersearch(args[1])
 
     elif args[0] == 'G:' or args[0] == 'GRADE:':
-        # implement R7 and R9
         number = args[1]
         option = ""
         if len(args) == 3:
@@ -161,21 +211,18 @@ while running:
         gradesearch(number, option)
 
     elif args[0] == 'B:' or args[0] == 'BUS:':
-        # implement R8
         if len(split) > 2:
             continue
         else:
             bussearch(args[1])
 
     elif args[0] == 'A:' or args[0] == 'AVERAGE:':
-        # implement R10
         if len(args) > 2:
             continue
         getavg(args[1])
 
     elif args[0] == 'Q' or args[0] == 'QUIT':
-        running = False
-        break
+        break;
 
     else:
         print('Enter a valid instruction')
